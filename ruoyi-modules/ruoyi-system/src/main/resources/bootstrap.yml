@@ -1,0 +1,89 @@
+# Tomcat
+server:
+  port: 9201
+
+# Spring
+spring: 
+  application:
+    # 应用名称
+    name: ruoyi-system
+  profiles:
+    # 环境配置
+    active: dev
+  cloud:
+    stream:
+      # Binding 配置项，对应 BindingProperties Map
+      bindings:
+        demo01-output:
+          destination: DEMO-TOPIC-01 # 目的地。这里使用 RocketMQ Topic
+          content-type: application/json # 内容格式。这里使用 JSON
+      # Spring Cloud Stream RocketMQ 配置项
+      rocketmq:
+        # RocketMQ Binder 配置项，对应 RocketMQBinderConfigurationProperties 类
+        binder:
+          name-server: 127.0.0.1:9876,127.0.0.1:9877 # RocketMQ Namesrv 地址
+        # RocketMQ 自定义 Binding 配置项，对应 RocketMQBindingProperties Map
+        bindings:
+          demo01-output:
+            # RocketMQ Producer 配置项，对应 RocketMQProducerProperties 类
+            producer:
+              group: test # 生产者分组
+              sync: true # 是否同步发送消息，默认为 false 异步。
+
+    nacos:
+      discovery:
+        # 服务注册地址
+        server-addr: 127.0.0.1:8848
+      config:
+        # 配置中心地址
+        server-addr: 127.0.0.1:8848
+        # 配置文件格式
+        file-extension: yml
+        # 共享配置
+        shared-configs:
+          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+  ## dynamic-tp 线程池配置文件
+  dynamic:
+    tp:
+      enabled: true
+      enabledBanner: true           # 是否开启banner打印，默认true
+      enabledCollect: true          # 是否开启监控指标采集，默认false
+      collectorTypes: micrometer,logging     # 监控数据采集器类型（logging | micrometer | internal_logging），默认micrometer
+      logPath: /home/logs           # 监控日志数据路径，默认 ${user.home}/logs
+      monitorInterval: 5            # 监控时间间隔（报警判断、指标采集），默认5s
+      configType: yml               # 配置文件类型
+      executors: # 动态线程池配置，都有默认值，采用默认值的可以不配置该项，减少配置量
+        - threadPoolName: dtpExecutor1
+          executorType: common          # 线程池类型common(增强线程池 DtpExecutor)、eager(IO 密集型场景使用的线程池 EagerDtpExecutor)、
+                                        # ordered(有序线程池 OrderedDtpExecutor)、scheduled(定时任务线程池 ScheduledDtpExecutor)、single(单线程池 SingleDtpExecutor)
+          corePoolSize: 16
+          maximumPoolSize: 50
+          queueCapacity: 200
+          queueType: VariableLinkedBlockingQueue   # 任务队列，查看源码QueueTypeEnum枚举类：LinkedBlockingQueue、ArrayBlockingQueue、SynchronousQueue、VariableLinkedBlockingQueue
+          rejectedHandlerType: CallerRunsPolicy    # 拒绝策略，查看RejectedTypeEnum枚举类 ：AbortPolicy、CallerRunsPolicy、DiscardOldestPolicy、DiscardPolicy
+          keepAliveTime: 50
+          allowCoreThreadTimeOut: false                  # 是否允许核心线程池超时
+          threadNamePrefix: test                         # 线程名前缀
+          waitForTasksToCompleteOnShutdown: false        # 参考spring线程池设计，优雅关闭线程池
+          awaitTerminationSeconds: 5                     # 单位（s）
+          preStartAllCoreThreads: false                  # 是否预热所有核心线程，默认false
+          runTimeout: 200                                # 任务执行超时阈值，目前只做告警用，单位（ms）
+          queueTimeout: 100                              # 任务在队列等待超时阈值，目前只做告警用，单位（ms）
+          taskWrapperNames: [ "ttl" ]                          # 任务包装器名称，集成TaskWrapper接口
+
+
+logging:
+  level:
+    #root: DEBUG
+    com.alibaba.nacos.client.config.impl: WARN
+
+
+
+# mybatis配置
+mybatis:
+  # 搜索指定包别名
+  typeAliasesPackage: com.ruoyi.system
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath:mapper/**/*.xml
+  executor-type: batch
+  batch-size: 1000
