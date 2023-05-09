@@ -1,6 +1,7 @@
 package com.ruoyi.system;
 
 import com.dtp.core.spring.EnableDynamicTp;
+import com.ruoyi.system.mq.MySource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.ruoyi.common.security.annotation.EnableCustomConfig;
@@ -10,7 +11,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 
 /**
  * 系统模块
- * 
+ *
  * @author ruoyi
  */
 @EnableDynamicTp
@@ -18,7 +19,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 @EnableCustomSwagger2
 @EnableRyFeignClients
 @SpringBootApplication
-@EnableBinding()
+@EnableBinding(MySource.class)
 public class RuoYiSystemApplication
 {
     public static void main(String[] args)
