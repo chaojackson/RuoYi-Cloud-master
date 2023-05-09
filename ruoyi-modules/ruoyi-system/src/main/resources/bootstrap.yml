@@ -1,9 +1,9 @@
 # Tomcat
 server:
-  port: 9201
+  port: 9090
 
 # Spring
-spring: 
+spring:
   application:
     # 应用名称
     name: ruoyi-system
@@ -21,7 +21,7 @@ spring:
       rocketmq:
         # RocketMQ Binder 配置项，对应 RocketMQBinderConfigurationProperties 类
         binder:
-          name-server: 127.0.0.1:9876,127.0.0.1:9877 # RocketMQ Namesrv 地址
+          name-server: 192.168.110.39:9876,192.168.110.39:9877 # RocketMQ Namesrv 地址
         # RocketMQ 自定义 Binding 配置项，对应 RocketMQBindingProperties Map
         bindings:
           demo01-output:
